@@ -1,26 +1,53 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from 'react';
+import { connect } from 'react-redux'
+import { HomepageListing, FetchBlogs } from "./actions/HomeAction";
+import List from "./components/List"
+class App extends Component {
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+  componentDidMount() {
+  this.props.getHomeData()
+
+  this.props.blogList()
+
+  //console.log("componentDidMount", "--------", homeresponse,"----",blogresponse)
+
+  }
+  render() {
+  //console.log("render",this.props.homeList)
+    return (
+      <div className="App">
+        <header className="App-header">
+          App component
+          <List {...this.props} />
+        </header>
+      </div>
+    );
+  }
 }
 
-export default App;
+
+const mapStateToProps = ({ HomeReducer: { dataList ,blogList } }, state) => {
+ // console.log("state=======",state)
+  let homeList = [];
+  let postList=[];
+  if (dataList !== undefined) {
+    homeList.push(dataList);
+  }
+  if (blogList !== undefined) {
+    postList.push(blogList);
+  }
+  return {
+    homeList: homeList,
+    postList: postList
+  }
+}
+
+
+
+const mapDispatchToProps = (dispatch) => ({
+  getHomeData: () => dispatch(HomepageListing()),
+  blogList: () => dispatch(FetchBlogs())
+});
+
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);

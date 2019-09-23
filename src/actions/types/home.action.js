@@ -1,0 +1,2 @@
+export const HOMEPAGE_BANNER = "HOMEPAGE_BANNER";
+export const BLOGS_LIST = "BLOGS_LIST"
