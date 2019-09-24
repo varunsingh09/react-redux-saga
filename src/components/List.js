@@ -1,27 +1,60 @@
-import React, { Fragment } from 'react';
+import React from "react";
+import axios from "axios"
+import InfiniteScroll from 'react-infinite-scroller'
+let page = 1
+class List extends React.Component {
+  state = {
+    items: "", numOfResults: 100, perPage: 20, message: <p className='text-success'>Loading...</p>
+  };
 
-const List = ({ postList }, props) => {
-
-  if (postList[0] === undefined) {
-    return <p>Loading...</p>
+  componentDidMount = async () => {
+    const result = await axios('https://hn.algolia.com/api/v1/search?query=redux');
+    this.setState({ items: result.data.hits, numOfResults: this.state.numOfResults })
   }
 
 
-  return (
+  fetchMoreData = () => {
+    console.log(this.state.perPage, "=======", page)
+    if (this.state.numOfResults >= (page * 20)) {
+      const response = axios(`https://hn.algolia.com/api/v1/search?query=redux&page=${page}`);
+
+      response.then((result) => {
+        setTimeout(() => {
+          this.setState({
+            items: [...this.state.items, ...result.data.hits]
+          });
+        }, 1500);
+      })
+
+      console.log(this.state.numOfResults, "----------", page * 20)
+      page++
+    }
+    if(this.state.numOfResults === (page * 20)){
+      this.setState({message:<p className='text-danger'>You reach end of the page!</p>})
+    }
+  }
+
+  render() {
+    if (this.state.items === "") {
+      return  <p className='text-success'>Loading...!</p>
+    }
 
 
-    <Fragment>List components
-       <ul>
-        {postList[0].hits.map((data, index) => {
-          return <li key={index}>{data.title}</li>
-        })}</ul>
+    return (
+      <InfiniteScroll
+        pageStart={0}
+        loadMore={this.fetchMoreData}
+        hasMore={true}
+        loader={<div className="loader">{this.state.message}</div>}>
 
-  
-    </Fragment>
-  );
+        {this.state.items && this.state.items.map((i, index) => {
+          return (<div key={index}>
+            {index} # {i.title}
+          </div>)
+        })}
+      </InfiniteScroll>
+    );
+  }
 }
-
-
-
 
 export default List
