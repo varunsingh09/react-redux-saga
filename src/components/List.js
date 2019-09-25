@@ -4,7 +4,7 @@ import InfiniteScroll from 'react-infinite-scroller'
 let page = 1
 class List extends React.Component {
   state = {
-    items: "", numOfResults: 100, perPage: 20, message: <p className='text-success'>Loading...</p>
+    items: "", numOfResults: 100, perPage: 20, message: <p className='text-success text-xs-center'>Loading...</p>
   };
 
   componentDidMount = async () => {
@@ -25,18 +25,16 @@ class List extends React.Component {
           });
         }, 1500);
       })
-
-      console.log(this.state.numOfResults, "----------", page * 20)
       page++
     }
-    if(this.state.numOfResults === (page * 20)){
-      this.setState({message:<p className='text-danger'>You reach end of the page!</p>})
+    if (this.state.numOfResults === (page * 20)) {
+      this.setState({ message: <p className='text-danger text-xs-center'>You reach end of the page!</p> })
     }
   }
 
   render() {
     if (this.state.items === "") {
-      return  <p className='text-success'>Loading...!</p>
+      return <p className='text-success'>Loading...!</p>
     }
 
 
@@ -45,12 +43,11 @@ class List extends React.Component {
         pageStart={0}
         loadMore={this.fetchMoreData}
         hasMore={true}
-        loader={<div className="loader">{this.state.message}</div>}>
-
-        {this.state.items && this.state.items.map((i, index) => {
-          return (<div key={index}>
+        loader={<div className="loader" key="true">{this.state.message}</div>}>
+        {this.state.items > "" && this.state.items.map((i, index) => {
+          return (<li key={index}>
             {index} # {i.title}
-          </div>)
+          </li>)
         })}
       </InfiniteScroll>
     );
